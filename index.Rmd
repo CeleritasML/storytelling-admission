@@ -1,0 +1,154 @@
+---
+title: "Admission Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    storyboard: true
+    orientation: columns
+    social: ["twitter", "linkedin"]
+    source_code: embed
+    theme: bootstrap
+    logo: static/logo.png
+    favicon: static/favicon.png
+    css: style.css
+---
+
+```{r setup, include=FALSE}
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(
+  tidyverse, flexdashboard,
+  here, styler,
+  hrbrthemes, ggthemes, ggtext, plotly,
+  glue, waffle
+)
+
+dat <- read_csv(here("data/data-cleaned.csv"))
+
+style_file("index.Rmd")
+```
+
+Insights {.storyboard data-icon="fa-chart-line" data-commentary-width=200}
+===================================== 
+
+
+### **Overall admission results.** Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+
+```{r, fig.width=8, fig.height=8}
+dat |>
+  count(decision) -> admission_summary
+
+p1 <- ggplot(admission_summary, aes(fill = decision, values = n)) +
+  geom_waffle(color = "white", size = 1.125, n_rows = 9, flip = TRUE) +
+  scale_fill_manual(
+    name = NULL,
+    values = c("#1A6899", "#FC5449", "#FFCF58"),
+    labels = c("Admit", "Decline", "Waitlist")
+  ) +
+  coord_equal() +
+  theme_ipsum_rc() +
+  theme(
+    legend.position = "bottom",
+    legend.title = element_text(color = "#000000"),
+    legend.text = element_text(color = "#000000"),
+    axis.title.y = element_text(
+      family = "IBM Plex Sans", face = "bold"
+    ),
+    axis.title.x = element_text(
+      family = "IBM Plex Sans", face = "bold"
+    ),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    text = element_text(
+      family = "IBM Plex Sans",
+      color = "#3B372E"
+    ),
+    plot.title = element_text(hjust = 0.5),
+    plot.subtitle = element_markdown(hjust = 0.5),
+    plot.caption = element_markdown(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  ) +
+  labs(
+    title = "SUMMER 2022 ADMISSION RESULTS",
+    subtitle = "BAD DATA EXCLUDED.",
+    caption = glue("SOURCE: SUMMERSTUDENTADMISSION2.CSV"),
+    x = "",
+    y = ""
+  )
+
+p1
+```
+
+***
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+### **Applicants by states.** Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+
+```{r, fig.width=8,fig.height=8}
+
+```
+
+*** 
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+### **Chart C.** Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+
+```{r, fig.width=8,fig.height=8}
+
+```
+
+*** 
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+
+Actionable Decisions {.storyboard data-icon="fa-graduation-cap"}
+===================================== 
+
+
+### **Decision/conclusion A**
+
+```{r, fig.width=8,fig.height=8}
+
+```
+
+*** 
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+### **Decision/conclusion B**
+
+```{r, fig.width=8,fig.height=8}
+
+```
+
+*** 
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+### **Decision/conclusion C**
+
+```{r, fig.width=8,fig.height=8}
+
+```
+
+*** 
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+
+About {data-icon="fa-info"}
+=====================================
+
+**Feel free to star or fork this repository.**
+
+<p>
+<a class="github-button" href="https://github.com/celeritasml/storytelling-admission" data-icon="octicon-star" data-size="large" aria-label="Star celeritasml/storytelling-admission on GitHub">Star</a>
+<a class="github-button" href="https://github.com/celeritasml/storytelling-admission/fork" data-icon="octicon-repo-forked" data-size="large" aria-label="Fork celeritasml/storytelling-admission on GitHub">Fork</a>
+</p>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
