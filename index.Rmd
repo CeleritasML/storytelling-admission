@@ -4,6 +4,7 @@ output:
   flexdashboard::flex_dashboard:
     storyboard: true
     orientation: columns
+    vertical_layout: fill
     social: ["twitter", "linkedin"]
     source_code: embed
     theme: bootstrap
@@ -13,12 +14,15 @@ output:
 ---
 
 ```{r setup, include=FALSE}
+gc()
+rm(list = ls())
+
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(
   tidyverse, flexdashboard,
   here, styler,
   hrbrthemes, ggthemes, ggtext, plotly,
-  glue, waffle
+  glue, waffle, DT, geofacet
 )
 
 dat <- read_csv(here("data/data-cleaned.csv"))
@@ -40,8 +44,8 @@ p1 <- ggplot(admission_summary, aes(fill = decision, values = n)) +
   geom_waffle(color = "white", size = 1.125, n_rows = 9, flip = TRUE) +
   scale_fill_manual(
     name = NULL,
-    values = c("#1A6899", "#FC5449", "#FFCF58"),
-    labels = c("Admit", "Decline", "Waitlist")
+    values = c("#1A6899", "#FFCF58", "#FC5449"),
+    labels = c("Admit", "Waitlist", "Decline")
   ) +
   coord_equal() +
   theme_ipsum_rc() +
@@ -82,7 +86,44 @@ p1
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-### **Applicants by states.** Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+
+### **Applicants by states.**
+
+```{r, fig.width=8,fig.height=8}
+
+# standardize all numeric variables
+
+dat_stand <- dat %>%
+  mutate(
+    decision = as_factor(decision),
+    state = as_factor(state),
+    gender = as_factor(gender),
+    across(where(is.numeric), ~ round(scale(.)[, 1], 2))
+  )
+
+dat_stand_long <- dat_stand %>% pivot_longer(
+  cols = c(
+    gpa, work_exp, test_score,
+    writing_score, volunteer_level
+  ),
+  names_to = "variable",
+  values_to = "value"
+)
+
+# dat_stand_long %>%
+#   ggplot(aes(x = variable, y=value,
+#              fill = variable)) +
+#   geom_col() +
+#   coord_flip() +
+#   theme_ipsum_rc() +
+#   facet_geo(~ state, grid = "us_state_grid2")
+```
+
+*** 
+
+This might not be a good idea since the applicants only come from a few states, the geofacet viz would be VERY sparse.
+
+### **Gender (in)equality.**
 
 ```{r, fig.width=8,fig.height=8}
 
@@ -90,17 +131,9 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 *** 
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Check applicant gender ratio.
 
-### **Chart C.** Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-
-```{r, fig.width=8,fig.height=8}
-
-```
-
-*** 
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Check admitted gender ratio.
 
 
 Actionable Decisions {.storyboard data-icon="fa-graduation-cap"}
@@ -138,10 +171,44 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
 
-About {data-icon="fa-info"}
+About {data-icon="fa-info" data-orientation=columns}
 =====================================
 
-**Feel free to star or fork this repository.**
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+The dataset contains 81 valid admission results from the CSV file `SummerStudentAdmissions2.csv`.
+
+Three versions of this dataset are included on the right hand side:
+
+- Standardized data.
+- Cleaned data.
+- Raw data.
+
+Due to the lack of information, some of the variables and contents from the dataset are interpreted intuitively.
+
+In the cleaned dataset,
+
+- `gender=-1` means the gender is undisclosed.
+- `volunteer_level` is ranked from 5 to 0.
+- `gpa` is calculated on a 4.0 scale.
+- `writing_score` should be on a 100 scale.
+- `test_score` has rather limited information.
+- `work_exp`'s unit is year.
+
+***
+
+The dashboard is powered by
+
+- [`flexdashboard`](https://pkgs.rstudio.com/flexdashboard/)
+- [`DT`](https://rstudio.github.io/DT/)
+- [`plotly`](https://plotly.com/)
+- The static visualization theme is customized based on [`hrbrmstr`](https://github.com/hrbrmstr/hrbrthemes).
+
+
+***
+
+The codes are open-sourced. **Please feel free to star or fork this repository.**
 
 <p>
 <a class="github-button" href="https://github.com/celeritasml/storytelling-admission" data-icon="octicon-star" data-size="large" aria-label="Star celeritasml/storytelling-admission on GitHub">Star</a>
@@ -150,5 +217,67 @@ About {data-icon="fa-info"}
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
+Column {.tabset data-width=650 data-height=1000}
+-----------------------------------------------------------------------
+
+### Standardized data
+
+```{r}
+DT::datatable(dat_stand,
+  options = list(
+    bPaginate = FALSE
+  ),
+  style = "bootstrap"
+) %>%
+  formatStyle(
+    "decision",
+    backgroundColor = styleEqual(
+      c("Admit", "Decline", "Waitlist"),
+      c("#1A6899", "#FC5449", "#FFCF58")
+    )
+  ) %>%
+  formatStyle(c(
+    "gpa", "work_exp", "test_score", "writing_score",
+    "volunteer_level"
+  ),
+  background = styleColorBar(range(c(
+    dat_stand$gpa, dat_stand$work_exp, dat_stand$test_score, dat_stand$writing_score,
+    dat_stand$volunteer_level
+  )), "lightblue"),
+  backgroundSize = "98% 88%",
+  backgroundRepeat = "no-repeat",
+  backgroundPosition = "center"
+  )
+```
+
+### Cleaned data
+
+```{r}
+dat <- read_csv("data/data-cleaned.csv")
+
+DT::datatable(dat,
+  options = list(
+    bPaginate = FALSE
+  ),
+  style = "bootstrap"
+) %>%
+  formatStyle(
+    "decision",
+    backgroundColor = styleEqual(
+      c("Admit", "Decline", "Waitlist"),
+      c("#1A6899", "#FC5449", "#FFCF58")
+    )
+  )
+```
+
+### Raw data
+
+```{r}
+DT::datatable(read_csv("data/SummerStudentAdmissions2.csv"),
+  options = list(
+    bPaginate = FALSE
+  ),
+  style = "bootstrap"
+)
+```
