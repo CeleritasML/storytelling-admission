@@ -131,10 +131,9 @@ This might not be a good idea since the applicants only come from a few states, 
 
 *** 
 
-In fact there admission stats by gender is nothing special:
+Check applicant gender ratio.
 
-- male 44, admit 15 + decline 16 + waitlist 13
-- female 34, admit 12 + decline 12 + waitlist 10
+Check admitted gender ratio.
 
 
 Actionable Decisions {.storyboard data-icon="fa-graduation-cap"}
