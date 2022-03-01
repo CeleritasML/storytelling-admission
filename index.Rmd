@@ -150,8 +150,8 @@ dat |>
     axis.title.x = element_text(
       family = "IBM Plex Sans", face = "bold"
     ),
-    # axis.text.x = element_text(),
-    # axis.text.y = element_text(),
+    axis.text.x = element_text(),
+    axis.text.y = element_text(),
     text = element_text(
       family = "IBM Plex Sans",
       color = "#3B372E"
@@ -273,7 +273,7 @@ p4 <- dat |>
     panel.grid.minor = element_blank()
   ) +
   labs(
-    title = "BEESWARM PLOT OF ADMISSION RESULTS",
+    title = "BEESWARM PLOT OF GPA",
     subtitle = "BY DECISION",
     caption = glue("SOURCE: SUMMERSTUDENTADMISSION2.CSV"),
     x = "decision",
