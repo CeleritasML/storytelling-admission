@@ -135,7 +135,6 @@ dat |>
     width = 0.2
   ) +
   scale_fill_manual(
-    name = c("Admit", "Decline", "Waitlist"),
     values = c("#1A6899", "#FC5449", "#FFCF58"),
     labels = c("Admit", "Decline", "Waitlist")
   ) +
@@ -247,7 +246,6 @@ p4 <- dat |>
   ggplot(aes(x = decision, y = gpa, color = decision)) +
   geom_beeswarm(size = 2) +
   scale_color_manual(
-    name = c("Admit", "Decline", "Waitlist"),
     values = c("#1A6899", "#FC5449", "#FFCF58"),
     labels = c("Admit", "Decline", "Waitlist")
   ) +
@@ -286,7 +284,6 @@ p5 <- dat |>
   ggplot(aes(x = decision, y = test_score, color = decision)) +
   geom_beeswarm(size = 2) +
   scale_color_manual(
-    name = c("Admit", "Decline", "Waitlist"),
     values = c("#1A6899", "#FC5449", "#FFCF58"),
     labels = c("Admit", "Decline", "Waitlist")
   ) +
@@ -336,7 +333,6 @@ p6 <- dat |>
   ggplot(aes(x = work_exp, y = volunteer_level, color = decision)) +
   geom_beeswarm(size = 2) +
   scale_color_manual(
-    name = c("Admit", "Decline", "Waitlist"),
     values = c("#1A6899", "#FC5449", "#FFCF58"),
     labels = c("Admit", "Decline", "Waitlist")
   ) +
