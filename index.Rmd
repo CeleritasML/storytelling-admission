@@ -131,8 +131,7 @@ p1
 ### **Admission results by gender**
 
 ```{r, fig.width=12,fig.height=8}
-
-dat |>
+p2 <- dat |>
   select(decision, gender) |>
   mutate(gender = as_factor(gender)) |>
   ggplot(aes(gender)) +
@@ -175,11 +174,11 @@ dat |>
     x = "gender",
     y = "count"
   )
+
+p2
 ```
 
 *** 
-
-@TODO
 
 - male 44, admit 15 + decline 16 + waitlist 13
 - female 34, admit 12 + decline 12 + waitlist 10
@@ -237,7 +236,6 @@ p3 <- dat_stand |>
     y = ""
   )
 
-# ggplotly(p3)
 p3
 ```
 
@@ -303,26 +301,42 @@ p4
 Actionable Decisions {data-icon="fa-graduation-cap" data-orientation=columns}
 =====================================
 
-Inputs {.sidebar data-width=600}
+<!-- Inputs {.sidebar data-width=600} -->
+Decision Column 1
 -------------------------------------
 
+### Geolocation
+
+- Due to:
+  - Scarcity of applicant records.
+  - Aggregation by regions.
+- Regions:
+  - South (51%), West (46%)
+  - Northeast (3%), Midwest (0%)
+
+#### ☑️ Recommend an overhaul of the College's recruitment strategy, especially at it pertains to these areas.
+
 ```{r}
-# shiny inputs defined here
+# ggsave(filename = "static/decision2.png", plot = p2, width = 8, height = 6)
+# ggsave(filename = "static/decision1.png", plot = p3, width = 8, height = 6)
 ```
+
+![](static/decision1-edit.png){width=100%}
  
-Column
+Decision Column 2
 -------------------------------------
     
-### Chart 1
-    
-```{r}
-```
-    
-### Chart 2
+### Gender
 
-```{r}
-```
+#### Decision 2
 
+- **Distinct** gender difference.
+- Similar acceptance rate. **No sexual discrimination present.**
+- Room for improvement (12%).
+
+#### ☑️ Recommend the college takes a closer look at how it is marketing itself to and engaging with potential female applicants.
+    
+![](static/decision2-edit.png){width=100%}
 
 About {data-icon="fa-info" data-orientation=columns}
 =====================================
