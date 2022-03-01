@@ -13,7 +13,7 @@ output:
     css: style.css
 ---
 
-```{r setup, include=FALSE}
+```{r setup-and-data-loading, include=FALSE}
 gc()
 rm(list = ls())
 
@@ -22,7 +22,8 @@ pacman::p_load(
   tidyverse, flexdashboard,
   here, styler, patchwork,
   hrbrthemes, ggthemes, ggtext, plotly,
-  glue, waffle, DT, geofacet, ggbeeswarm
+  glue, waffle, DT, geofacet, ggbeeswarm,
+  ggridges, treemapify
 )
 
 dat <- read_csv(here("data/data-cleaned.csv"))
@@ -37,8 +38,10 @@ dat_stand <- dat |>
     state = as_factor(state),
     gender = as_factor(gender),
     across(where(is.numeric), ~ round(scale(.)[, 1], 2)),
-    partition = if_else(
-      state %in% c("California", "Colorado", "Utah", "Oregon"), "west", "east"
+    partition = case_when(
+      state %in% c("California", "Colorado", "Utah", "Oregon") ~ "west",
+      state %in% c("Vermont", "New York") ~ "northeast",
+      TRUE ~ "south"
     )
   )
 
@@ -52,8 +55,10 @@ dat_stand_long <- dat_stand |> pivot_longer(
 )
 
 dat_long <- dat |>
-  mutate(partition = if_else(
-    state %in% c("California", "Colorado", "Utah", "Oregon"), "west", "east"
+  mutate(partition = case_when(
+    state %in% c("California", "Colorado", "Utah", "Oregon") ~ "west",
+    state %in% c("Vermont", "New York") ~ "northeast",
+    TRUE ~ "south"
   )) |>
   pivot_longer(
     cols = c(
@@ -69,7 +74,7 @@ Insights {.storyboard data-icon="fa-chart-line" data-commentary-width=200}
 ===================================== 
 
 
-### **Overall admission results.**
+### **Overall admission results**
 
 ```{r, fig.width=8, fig.height=8}
 dat |>
@@ -118,13 +123,14 @@ p1
 
 ***
 
-The overall admission rate is $35.8\%$.
+- **81 applicants.**
+- Accepted (~35%), rejected (~30%), and waitlisted (~35%).
+  - Average acceptance among U.S.-based colleges in 2021 was 66%. [Source](https://www.collegedata.com/resources/the-facts-on-fit/understanding-college-selectivity).
+- **Increased selectivity.**
 
-### **Admission results by gender.**
+### **Admission results by gender**
 
 ```{r, fig.width=12,fig.height=8}
-# - male 44, admit 15 + decline 16 + waitlist 13
-# - female 34, admit 12 + decline 12 + waitlist 10
 
 dat |>
   select(decision, gender) |>
@@ -173,32 +179,36 @@ dat |>
 
 *** 
 
+@TODO
+
 - male 44, admit 15 + decline 16 + waitlist 13
 - female 34, admit 12 + decline 12 + waitlist 10
 
-**Decision:**
-
-
-### **Applicants by geolocations.**
+### **Applicants by geolocations (1)**
 
 ```{r, fig.width=12,fig.height=8}
-# dat_long |>
-#   summary()
-p3 <- dat_long |>
-  ggplot(aes(x = value, color = partition, fill = partition)) +
-  geom_density(alpha = 0.3) +
-  facet_wrap(~variable, scales = "free") +
-  scale_fill_manual(
-    values = c("#FC5449", "#1A6899"),
-    labels = c("east", "west")
+p3 <- dat_stand |>
+  group_by(state, partition) |>
+  summarize(count = n()) |>
+  ggplot(aes(
+    area = count, fill = partition,
+    label = count, subgroup = state
+  )) +
+  geom_treemap() +
+  geom_treemap_subgroup_border(color = "white", size = 2) +
+  geom_treemap_subgroup_text(
+    place = "centre", grow = TRUE,
+    alpha = 0.5, colour = "white",
+    fontface = "italic"
   ) +
-  scale_color_manual(
-    values = c("#FC5449", "#1A6899"),
-    labels = c("east", "west")
+  geom_treemap_text(
+    color = "white", place = "bottomright",
+    alpha = 0.7, fontface = "bold"
   ) +
+  scale_fill_brewer(palette = "Set1") +
   theme_ipsum_rc() +
   theme(
-    legend.position = "none",
+    legend.position = "bottom",
     legend.title = element_text(color = "#000000"),
     legend.text = element_text(color = "#000000"),
     axis.title.y = element_text(
@@ -220,11 +230,11 @@ p3 <- dat_long |>
     panel.grid.minor = element_blank()
   ) +
   labs(
-    title = "SUMMER 2022 ADMISSION RESULTS",
-    subtitle = "<span style='color:#1A6899;'>**WEST**</span> VS <span style='color:#FC5449;'>**EAST**</span>",
+    title = "TREEMAP OF APPLICANTS",
+    subtitle = "SUMMER 2022",
     caption = glue("SOURCE: SUMMERSTUDENTADMISSION2.CSV"),
-    x = "candidates' standardized measurement",
-    y = "density"
+    x = "",
+    y = ""
   )
 
 # ggplotly(p3)
@@ -233,109 +243,24 @@ p3
 
 *** 
 
-Originally the plan was to show the applicants' measures by state. But due to the size of dataset, the result is quite sparse. So hear we decide to devide the states into two partitions: `East` and `West`.
+![Census Regions and Divisions](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Census_Regions_and_Division_of_the_United_States.svg/1280px-Census_Regions_and_Division_of_the_United_States.svg.png){width=100%}
 
-**Decision:**
+- Unfeasible to check the data by states.
+- Aggregation by **regions**.
+- Three states are the major origins of applicants.
 
- 
-### **Grade matters?** Does the GPA or standardized testing determine a person's success?
-
-
-```{r, fig.width=16,fig.height=8}
-p4 <- dat |>
-  ggplot(aes(x = decision, y = gpa, color = decision)) +
-  geom_beeswarm(size = 2) +
-  scale_color_manual(
-    values = c("#1A6899", "#FC5449", "#FFCF58"),
-    labels = c("Admit", "Decline", "Waitlist")
-  ) +
-  theme_ipsum_rc() +
-  theme(
-    legend.position = "bottom",
-    legend.title = element_text(color = "#000000"),
-    legend.text = element_text(color = "#000000"),
-    axis.title.y = element_text(
-      family = "IBM Plex Sans", face = "bold"
-    ),
-    axis.title.x = element_text(
-      family = "IBM Plex Sans", face = "bold"
-    ),
-    # axis.text.x = element_text(),
-    # axis.text.y = element_text(),
-    text = element_text(
-      family = "IBM Plex Sans",
-      color = "#3B372E"
-    ),
-    plot.title = element_text(hjust = 0.5),
-    plot.subtitle = element_markdown(hjust = 0.5),
-    plot.caption = element_markdown(),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank()
-  ) +
-  labs(
-    title = "BEESWARM PLOT OF GPA",
-    subtitle = "BY DECISION",
-    caption = glue("SOURCE: SUMMERSTUDENTADMISSION2.CSV"),
-    x = "decision",
-    y = "gpa (4.0)"
-  )
-
-p5 <- dat |>
-  ggplot(aes(x = decision, y = test_score, color = decision)) +
-  geom_beeswarm(size = 2) +
-  scale_color_manual(
-    values = c("#1A6899", "#FC5449", "#FFCF58"),
-    labels = c("Admit", "Decline", "Waitlist")
-  ) +
-  theme_ipsum_rc() +
-  theme(
-    legend.position = "bottom",
-    legend.title = element_text(color = "#000000"),
-    legend.text = element_text(color = "#000000"),
-    axis.title.y = element_text(
-      family = "IBM Plex Sans", face = "bold"
-    ),
-    axis.title.x = element_text(
-      family = "IBM Plex Sans", face = "bold"
-    ),
-    # axis.text.x = element_text(),
-    # axis.text.y = element_text(),
-    text = element_text(
-      family = "IBM Plex Sans",
-      color = "#3B372E"
-    ),
-    plot.title = element_text(hjust = 0.5),
-    plot.subtitle = element_markdown(hjust = 0.5),
-    plot.caption = element_markdown(),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank()
-  ) +
-  labs(
-    title = "BEESWARM PLOT OF STANDARDIZED TEST SCORE",
-    subtitle = "BY DECISION",
-    caption = glue("SOURCE: SUMMERSTUDENTADMISSION2.CSV"),
-    x = "decision",
-    y = "score"
-  )
-
-p4 + p5
-```
-
-***
-
-**Decision:**
-
-### **Volunteer level.** Or it outweighted by work experience?
-
+### **Applicants by geolocations (2)**
 
 ```{r, fig.width=12,fig.height=8}
-p6 <- dat |>
-  ggplot(aes(x = work_exp, y = volunteer_level, color = decision)) +
-  geom_beeswarm(size = 2) +
-  scale_color_manual(
-    values = c("#1A6899", "#FC5449", "#FFCF58"),
-    labels = c("Admit", "Decline", "Waitlist")
-  ) +
+p4 <- dat_long |>
+  ggplot(aes(x = value, y = partition, color = partition, fill = partition)) +
+  geom_density_ridges(alpha = 0.7) +
+  scale_y_discrete(expand = c(0, 0)) + # will generally have to set the `expand` option
+  scale_x_continuous(expand = c(0, 0)) + # for both axes to remove unneeded padding
+  coord_cartesian(clip = "off") + # to avoid clipping of the very top of the top ridgeline +
+  facet_wrap(~variable, scales = "free") +
+  scale_fill_brewer(palette = "Set1") +
+  scale_color_brewer(palette = "Set1") +
   theme_ipsum_rc() +
   theme(
     legend.position = "bottom",
@@ -347,8 +272,8 @@ p6 <- dat |>
     axis.title.x = element_text(
       family = "IBM Plex Sans", face = "bold"
     ),
-    # axis.text.x = element_text(),
-    # axis.text.y = element_text(),
+    # axis.text.x = element_blank(),
+    # axis.text.y = element_blank(),
     text = element_text(
       family = "IBM Plex Sans",
       color = "#3B372E"
@@ -360,24 +285,49 @@ p6 <- dat |>
     panel.grid.minor = element_blank()
   ) +
   labs(
-    title = "WORK EXPERIENCE VS VOLUNTEER LEVEL",
-    caption = glue("SOURCE: SUMMERSTUDENTADMISSION2.CSV"),
-    x = "work experience (years)",
-    y = "volunteer level (0-5)"
+    title = "RIDGEPLOT OF APPLICANTS' QUANTITATIVE MEASURES",
+    subtitle = "SUMMER 2022",
+    caption = glue("NOT ENOUGH NORTHEAST DATA FOR RIDGE PLOT.<br>SOURCE: SUMMERSTUDENTADMISSION2.CSV"),
+    x = "candidates' standardized measurement",
+    y = "density"
   )
 
-p6
+p4
 ```
 
 ***
 
-**Decision:**
+- **No significant difference in quantitative measures of applicants.**
+
+
+Actionable Decisions {data-icon="fa-graduation-cap" data-orientation=columns}
+=====================================
+
+Inputs {.sidebar data-width=600}
+-------------------------------------
+
+```{r}
+# shiny inputs defined here
+```
+ 
+Column
+-------------------------------------
+    
+### Chart 1
+    
+```{r}
+```
+    
+### Chart 2
+
+```{r}
+```
 
 
 About {data-icon="fa-info" data-orientation=columns}
 =====================================
 
-Column {data-width=350}
+Left Column Text {data-width=350}
 -----------------------------------------------------------------------
 
 The dataset contains 81 valid admission results from the CSV file `SummerStudentAdmissions2.csv`.
@@ -421,7 +371,7 @@ The codes are open-sourced. **Please feel free to star or fork this repository.*
 <script async defer src="https://buttons.github.io/buttons.js"></script>
 
 
-Column {.tabset data-width=650 data-height=1000}
+Right Column Table {.tabset data-width=650 data-height=1000}
 -----------------------------------------------------------------------
 
 ### Standardized data
