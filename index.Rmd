@@ -301,20 +301,21 @@ p4
 Actionable Decisions {data-icon="fa-graduation-cap" data-orientation=columns}
 =====================================
 
-<!-- Inputs {.sidebar data-width=600} -->
 Decision Column 1
 -------------------------------------
 
-### Geolocation
+### Scarcity of applicant records by region
 
-- Due to:
-  - Scarcity of applicant records.
-  - Aggregation by regions.
-- Regions:
+- Recall:
   - South (51%), West (46%)
   - Northeast (3%), Midwest (0%)
 
-#### ☑️ Recommend an overhaul of the College's recruitment strategy, especially at it pertains to these areas.
+#### Recommend an overhaul of the College's recruitment strategy, especially at it pertains to these areas.
+
+- ✔️`Set up student focus groups, with an emphasis on students from underrepresented areas, to capture what led them to apply`
+- ✔️`Engage with the leadership of popular schools in the Northeast and Midwest to share recruitment best practices and lessons learned`
+- ✔️`Review and revise the college’s recruitment strategy in line with collected findings`
+
 
 ```{r}
 # ggsave(filename = "static/decision2.png", plot = p2, width = 8, height = 6)
@@ -326,15 +327,17 @@ Decision Column 1
 Decision Column 2
 -------------------------------------
     
-### Gender
+### Room for improvement in female applicants
 
-#### Decision 2
+- Recall:
+  - **Distinct** gender difference (12%).
+  - Similar acceptance rate. **No sexual discrimination present.**
 
-- **Distinct** gender difference.
-- Similar acceptance rate. **No sexual discrimination present.**
-- Room for improvement (12%).
+#### Recommend the college takes a closer look at how it is marketing itself to and engaging with potential female applicants.
+- ✔️`Reevaluate criteria used to assess student applicants, to identify potential variables that may be unfairly filtering out women`
+- ✔️`Engage with leadership and students to reaffirm the college’s dedication to inclusivity and equality - and dedicate resources towards this cause`
+- ✔️`Revise the current marketing strategy used by the college to ensure it caters to female applicants`
 
-#### ☑️ Recommend the college takes a closer look at how it is marketing itself to and engaging with potential female applicants.
     
 ![](static/decision2-edit.png){width=100%}
 
