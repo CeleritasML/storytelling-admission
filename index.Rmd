@@ -122,7 +122,6 @@ p1
 ```
 
 ***
-
 - **81 applicants.**
 - Accepted (~35%), rejected (~30%), and waitlisted (~35%).
   - Average acceptance among U.S.-based colleges in 2021 was 66%. [Source](https://www.collegedata.com/resources/the-facts-on-fit/understanding-college-selectivity).
@@ -378,7 +377,9 @@ The dashboard is powered by
 
 ***
 
-The codes are open-sourced. **Please feel free to star or fork this repository.**
+**This project is presented by [Dan Cisek](https://github.com/dcisek93) and [Rui Qiu](https://github.com/rexarski).**
+
+**Please feel free to star or fork this repository.**
 
 <p>
 <a class="github-button" href="https://github.com/celeritasml/storytelling-admission" data-icon="octicon-star" data-size="large" aria-label="Star celeritasml/storytelling-admission on GitHub">Star</a>
